@@ -1,3 +1,4 @@
+/*
 let appState = {
     title: {
         text: 'React.js 小书',
@@ -8,6 +9,7 @@ let appState = {
         color: 'blue'
     }
 }
+*/
 
 
 /*function stateChanger (state, action) {
@@ -23,6 +25,18 @@ let appState = {
     }
 }*/
 function stateChanger (state, action) {
+    if(!state){
+        return {
+            title: {
+                text: 'React.js 小书',
+                color: 'red',
+            },
+            content: {
+                text: 'React.js 小书内容',
+                color: 'blue'
+            }
+        }
+    }
     switch (action.type) {
         case 'UPDATE_TITLE_TEXT':
             return {
@@ -45,14 +59,16 @@ function stateChanger (state, action) {
     }
 }
 
-function createStore (state, stateChanger) {
+function createStore (reducer) {
+    let state = null
     const listeners = []
     const subscribe = (listener) => listeners.push(listener)
     const getState = () => state
     const dispatch = (action) => {
-        state = stateChanger(state, action)
+        state = reducer(state, action)
         listeners.forEach((listener) => listener())
     }
+    dispatch({})
     return { getState, dispatch ,subscribe}
 }
 
@@ -98,7 +114,7 @@ function renderContent (newContent, oldContent = {}) {
     contentDOM.style.color = newContent.color
 }
 
-const store = createStore(appState, stateChanger)
+const store = createStore(stateChanger)
 let oldState = store.getState() // 缓存旧的 state
 store.subscribe(() => {
         const newState = store.getState()
@@ -108,5 +124,5 @@ store.subscribe(() => {
 
 renderApp(store.getState()) // 首次渲染页面
 store.dispatch({ type: 'UPDATE_TITLE_TEXT', text: '《React.js 小书777》' }) // 修改标题文本
-store.dispatch({ type: 'UPDATE_TITLE_COLOR', color: 'blue' }) // 修改标题颜色
+store.dispatch({ type: 'UPDATE_TITLE_COLOR', color: 'green' }) // 修改标题颜色
 // ...后面不管如何 store.dispatch，都不需要重新调用 renderApp
